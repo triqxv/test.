@@ -1,3 +1,4 @@
+-sos lol jejejejeje
 --Key:
 
 local Code = "Release"
@@ -222,21 +223,25 @@ local function HIHMY_fake_script() -- LockedGui.KeySystem
 	end)
 
 	CheckKey.Activated:Connect(function()
-		if Key.Text == Code then
-			KeyE = true
+    if Key.Text == Code then
+        KeyE = true
 
-			for i,v in pairs(LockedGui:GetDescendants()) do
-				if v:IsA("GuiObject") then
-					v.Visible = false
-				end
-			end
-			for i,v in pairs(UnlockedGui:GetDescendants()) do
-				if v:IsA("GuiObject") then
-					v.Visible = true
-				end
-			end
-		end
-	end)
+        for i, v in pairs(LockedGui:GetDescendants()) do
+            if v:IsA("GuiObject") then
+                v.Visible = false
+            end
+        end
+        for i, v in pairs(UnlockedGui:GetDescendants()) do
+            if v:IsA("GuiObject") then
+                v.Visible = true
+            end
+        end
+
+        -- Auto-input logic
+        wait(2)  -- Adjust the delay as needed
+        GetKey.Activated:Fire()  -- Trigger the GetKey button click
+    end
+end)
 end
 coroutine.wrap(HIHMY_fake_script)()
 local function KOULNL_fake_script() -- Background.Drag 
