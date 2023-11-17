@@ -1,3 +1,4 @@
+--sos cochon
 --Key:
 
 local Code = "Release"
@@ -441,13 +442,16 @@ end)
 		spawn(function()
 			while wait(0.01) do
 				pcall(function()
-					for _, v in pairs(game:GetService("Workspace"):GetChildren()) do
-						if string.find(v.Name, "Fruit") and v:IsA("Tool") then
-							v.Handle.CFrame = game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame * CFrame.new(0, 50, 0)
-							wait(.2)
-							firetouchinterest(game.Players.LocalPlayer.Character.HumanoidRootPart, v.Handle, 0)
-						end
-					end
+					for i, v in pairs(game:GetService("Workspace"):GetChildren()) do
+    if v and v:IsA("Tool") and v:FindFirstChild("Handle") then
+        if string.find(v.Name, "Fruit") then
+            v.Handle.CFrame = game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame * CFrame.new(0, 50, 0)
+            wait(.2)
+            firetouchinterest(game.Players.LocalPlayer.Character.HumanoidRootPart, v.Handle, 0)
+        end
+    end
+end
+
 					
 					for _, fruitName in ipairs(fruitNames) do
 						checkAndStoreFruit(fruitName)
