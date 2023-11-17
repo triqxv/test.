@@ -340,129 +340,175 @@ end)
 		--Fruits
 		
 		game:GetService("ReplicatedStorage").Remotes["CommF_"]:InvokeServer("SetTeam", "Pirates")
-		
-		spawn(function()
-			repeat wait() until game.Players.LocalPlayer.PlayerGui.Main.ChooseTeam.Container.Pirates.Frame.ViewportFrame:FindFirstChild("TextButton")
-			local textButton = game.Players.LocalPlayer.PlayerGui.Main.ChooseTeam.Container.Pirates.Frame.ViewportFrame.TextButton
 
-			textButton.Size = UDim2.new(0, 10000, 0, 10000)
-			textButton.Position = UDim2.new(-4, 0, -5, 0)
-			textButton.BackgroundTransparency = 1
-		end)
-		
-		wait(1)
-		game:GetService("VirtualInputManager"):SendMouseButtonEvent(500,500, 0, true, game, 1)
-		game:GetService("VirtualInputManager"):SendMouseButtonEvent(500,500, 0, false, game, 1)
-		wait(1)
-		game:GetService("VirtualInputManager"):SendMouseButtonEvent(500,500, 0, true, game, 1)
-		game:GetService("VirtualInputManager"):SendMouseButtonEvent(500,500, 0, false, game, 1)
+spawn(function()
+    repeat wait() until game.Players.LocalPlayer.PlayerGui.Main.ChooseTeam.Container.Pirates.Frame.ViewportFrame:FindFirstChild("TextButton")
+    local textButton = game.Players.LocalPlayer.PlayerGui.Main.ChooseTeam.Container.Pirates.Frame.ViewportFrame.TextButton
 
-		repeat wait(1) until game.Workspace.Characters:FindFirstChild(game.Players.LocalPlayer.Name)
-		
-		warn("Test")
-		
-		local fruitNames = {
-			"Rocket", "Spin", "Chop", "Spring", "Bomb", "Smoke", "Spike", "Flame", "Falcon", 
-			"Ice", "Sand", "Dark", "Diamond", "Light", "Rubber", "Barrier", "Ghost", "Magma", 
-			"Quake", "Buddha", "Love", "Spider", "Sound", "Phoenix", "Portal", "Rumble", 
-			"Pain", "Blizzard", "Gravity", "Mammoth", "Dough", "Shadow", "Venom", "Control", 
-			"Spirit", "Dragon", "Leopard"
-		}
-		
-		local function storeFruit(fruitName)
-			game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer("StoreFruit", fruitName)
-		end
-		
-		local function checkAndStoreFruit(fruitName)
-			local subtitle = game.Players.LocalPlayer.PlayerGui.Subtitle
-		
-			if game:GetService("Players").LocalPlayer.Character:FindFirstChild(fruitName) or game:GetService("Players").LocalPlayer.Backpack:FindFirstChild(fruitName) then
-				storeFruit(fruitName .. "-" .. fruitName)
-				subtitle.Text = "Fruit Found: " .. fruitName
-			else
-				subtitle.Text = "Fruit Not Found"
-			end
-		end
-		
-		local function teleportToNewServer()
-			local placeId = game.PlaceId
-			local allIds = {}
-			local foundAnything = ""
-			
-			local function tpReturner()
-				local site
-				if foundAnything == "" then
-					site = game.HttpService:JSONDecode(game:HttpGet('https://games.roblox.com/v1/games/' .. placeId .. '/servers/Public?sortOrder=Asc&limit=100'))
-				else
-					site = game.HttpService:JSONDecode(game:HttpGet('https://games.roblox.com/v1/games/' .. placeId .. '/servers/Public?sortOrder=Asc&limit=100&cursor=' .. foundAnything))
-				end
-				
-				local id = ""
-				
-				if site.nextPageCursor and site.nextPageCursor ~= "null" and site.nextPageCursor ~= nil then
-					foundAnything = site.nextPageCursor
-				end
-				
-				for _, v in pairs(site.data) do
-					local possible = true
-					id = tostring(v.id)
-					
-					if tonumber(v.maxPlayers) > tonumber(v.playing) then
-						for _, existing in pairs(allIds) do
-							if id == tostring(existing) then
-								possible = false
-							end
-						end
-						
-						if possible then
-							table.insert(allIds, id)
-							
-							pcall(function()
-								writefile("NotSameServers.json", game:GetService('HttpService'):JSONEncode(allIds))
-								wait()
-								game:GetService("TeleportService"):TeleportToPlaceInstance(placeId, id, game.Players.LocalPlayer)
-							end)
-							
-							wait(4)
-						end
-					end
-				end
-			end
-			
-			while wait() do
-				pcall(function()
-					tpReturner()
-					if foundAnything ~= "" then
-						tpReturner()
-					end
-				end)
-			end
-		end
-		
-		spawn(function()
-			while wait(0.01) do
-				pcall(function()
-					for i, v in pairs(game:GetService("Workspace"):GetChildren()) do
-    if v and v:IsA("Tool") and v:FindFirstChild("Handle") then
-        if string.find(v.Name, "Fruit") then
-            v.Handle.CFrame = game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame * CFrame.new(0, 50, 0)
-            wait(.2)
-            firetouchinterest(game.Players.LocalPlayer.Character.HumanoidRootPart, v.Handle, 0)
+    textButton.Size = UDim2.new(0, 10000, 0, 10000)
+    textButton.Position = UDim2.new(-4, 0, -5, 0)
+    textButton.BackgroundTransparency = 1
+end)
+
+wait(1)
+game:GetService("VirtualInputManager"):SendMouseButtonEvent(500, 500, 0, true, game, 1)
+game:GetService("VirtualInputManager"):SendMouseButtonEvent(500, 500, 0, false, game, 1)
+wait(1)
+game:GetService("VirtualInputManager"):SendMouseButtonEvent(500, 500, 0, true, game, 1)
+game:GetService("VirtualInputManager"):SendMouseButtonEvent(500, 500, 0, false, game, 1)
+
+repeat wait(1) until game.Workspace.Characters:FindFirstChild(game.Players.LocalPlayer.Name)
+
+warn("Test")
+
+local function findAndStoreFruit(fruitName)
+    local plr = game.Players.LocalPlayer
+    local chr = plr.Character
+
+    for _, v in pairs(game.Workspace:GetChildren()) do
+        if v.Name:find("Fruit") and (v:IsA("Tool") or v:IsA("Model")) then
+            repeat
+                local bv = Instance.new("BodyVelocity")
+                bv.MaxForce = Vector3.new(1 / 0, 1 / 0, 1 / 0)
+                bv.Velocity = Vector3.new()
+                bv.Name = "bV"
+                local bav = Instance.new("BodyAngularVelocity")
+                bav.AngularVelocity = Vector3.new()
+                bav.MaxTorque = Vector3.new(1 / 0, 1 / 0, 1 / 0)
+                bav.Name = "bAV"
+
+                local anc1 = bv:Clone()
+                anc1.Parent = chr.HumanoidRootPart
+                local anc2 = bav:Clone()
+                anc2.Parent = chr.HumanoidRootPart
+
+                local p = game.TweenService:Create(
+                    chr.HumanoidRootPart,
+                    TweenInfo.new((plr:DistanceFromCharacter(v.Handle.Position) - 100) / 320, Enum.EasingStyle.Linear),
+                    { CFrame = v.Handle.CFrame + Vector3.new(0, 10, 0) }
+                )
+                Subtitle.Text = "Fruit Found: " .. v.Name
+                p:Play()
+                p.Completed:Wait()
+                chr.HumanoidRootPart.CFrame = v.Handle.CFrame
+                anc1:Destroy()
+                anc2:Destroy()
+                wait(1)
+            until v.Parent ~= game.Workspace
+            wait(1)
+            local fruit = chr:FindFirstChildOfClass("Tool") and chr:FindFirstChildOfClass("Tool").Name:find("Fruit") and chr:FindFirstChildOfClass("Tool") or (function()
+                for _, fr in plr.Backpack:GetChildren() do
+                    if fr.Name:find("Fruit") then
+                        return fr
+                    end
+                end
+            end)()
+            print(fruit)
+            game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer("StoreFruit", fruit:GetAttribute("OriginalName"), fruit)
+        else
+            Subtitle.Text = "Fruit Not Found"
         end
     end
 end
 
-					
-					for _, fruitName in ipairs(fruitNames) do
-						checkAndStoreFruit(fruitName)
-					end
-				end)
-			end
-		end)
-		
-		spawn(teleportToNewServer)
-		
+-- Teleportation logic
+spawn(function()
+    local currentJobId = game.JobId
+    repeat
+        task.spawn(
+            pcall,
+            function()
+                local Time = 0.1 -- seconds
+                repeat
+                    wait()
+                until game:IsLoaded()
+                wait(Time)
+                local PlaceID = game.PlaceId
+                local AllIDs = {}
+                local foundAnything = ""
+                local actualHour = os.date("!*t").hour
+                local Deleted = false
 
-	end)
-end
+                local function TPReturner()
+                    local Site
+                    if foundAnything == "" then
+                        Site = game.HttpService:JSONDecode(
+                            game:HttpGet(
+                                'https://games.roblox.com/v1/games/' .. PlaceID .. '/servers/Public?sortOrder=Asc&limit=100'
+                            )
+                        )
+                    else
+                        Site = game.HttpService:JSONDecode(
+                            game:HttpGet(
+                                'https://games.roblox.com/v1/games/' ..
+                                    PlaceID .. '/servers/Public?sortOrder=Asc&limit=100&cursor=' .. foundAnything
+                            )
+                        )
+                    end
+                    local ID = ""
+                    if Site.nextPageCursor and Site.nextPageCursor ~= "null" and Site.nextPageCursor ~= nil then
+                        foundAnything = Site.nextPageCursor
+                    end
+                    local num = 0
+                    for i, v in pairs(Site.data) do
+                        local Possible = true
+                        ID = tostring(v.id)
+                        if tonumber(v.maxPlayers) > tonumber(v.playing) then
+                            for _, Existing in pairs(AllIDs) do
+                                if num ~= 0 then
+                                    if ID == tostring(Existing) then
+                                        Possible = false
+                                    end
+                                else
+                                    if tonumber(actualHour) ~= tonumber(Existing) then
+                                        local delFile = pcall(
+                                            function()
+                                                delfile("NotSameServers.json")
+                                                AllIDs = {}
+                                                table.insert(AllIDs, actualHour)
+                                            end
+                                        )
+                                    end
+                                end
+                                num = num + 1
+                            end
+                            if Possible == true then
+                                table.insert(AllIDs, ID)
+                                wait()
+                                pcall(
+                                    function()
+                                        writefile(
+                                            "NotSameServers.json",
+                                            game:GetService('HttpService'):JSONEncode(AllIDs)
+                                        )
+                                        wait()
+                                        game:GetService("TeleportService"):TeleportToPlaceInstance(PlaceID, ID, game.Players.LocalPlayer)
+                                    end
+                                )
+                                wait(4)
+                            end
+                        end
+                    end
+                end
+
+                local function Teleport()
+                    while wait() do
+                        pcall(
+                            function()
+                                TPReturner()
+                                if foundAnything ~= "" then
+                                    TPReturner()
+                                end
+                            end
+                        )
+                    end
+                end
+
+                Teleport()
+            end
+        )
+        wait(2)
+    until game.JobId ~= currentJobId
+end)
+
 coroutine.wrap(IORYQ_fake_script)()
